@@ -1,26 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap') layer(base);
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Tailwind v4: utilities like bg-primary, text-text-muted, font-display are
+  generated automatically from these --color-* / --font-* / --radius-*
+  tokens — there is no separate tailwind.config.ts needed for this project.
+*/
+
+/* Class-based dark mode (v4 defaults to prefers-color-scheme, so this
+   custom variant is required to make ThemeToggle's .dark class work) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #0f5257;
+  --color-primary-foreground: #f5f8f7;
+  --color-primary-soft: #e3edec;
+
+  --color-accent: #ff6b5e;
+  --color-accent-foreground: #ffffff;
+
+  --color-success: #4f8f72;
+  --color-warning: #c98a1f;
+  --color-danger: #c4483c;
+
+  --color-background: #f4f7f7;
+  --color-foreground: #142023;
+  --color-surface: #ffffff;
+  --color-surface-muted: #eef2f2;
+  --color-border: #dfe6e5;
+  --color-text-muted: #5b6b6c;
+
+  --font-display: "Fraunces", serif;
+  --font-sans: "Outfit", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+
+  --shadow-soft: 0 1px 2px 0 rgba(15, 82, 87, 0.06), 0 8px 24px -8px rgba(15, 82, 87, 0.10);
+
+  --animate-pulse-line: pulse-line 3.2s ease-in-out infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --color-primary: #4fb3ab;
+  --color-primary-foreground: #0a1315;
+  --color-primary-soft: #16302f;
+
+  --color-accent: #ff8577;
+  --color-accent-foreground: #1a0d0a;
+
+  --color-success: #6bb491;
+  --color-warning: #dba445;
+  --color-danger: #e0655a;
+
+  --color-background: #0c1517;
+  --color-foreground: #e8eeee;
+  --color-surface: #101b1e;
+  --color-surface-muted: #162325;
+  --color-border: #1f2f31;
+  --color-text-muted: #93a4a4;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes pulse-line {
+  0%, 100% { stroke-dashoffset: 0; }
+  50% { stroke-dashoffset: 24; }
+}
+
+* {
+  border-color: var(--color-border);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  @apply font-sans;
+}
+
+.pulse-line path {
+  stroke-dasharray: 6 6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-line {
+    animation: none !important;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 999px;
 }
