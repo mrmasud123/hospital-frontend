@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 interface Doctor {
     id: number;
     name: string;
-    specialty: string;
+    specialization: string;
     avatar: string | null;
 }
 
