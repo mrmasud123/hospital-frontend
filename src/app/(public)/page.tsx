@@ -1,10 +1,9 @@
 "use client";
 
-import {useAuthStore} from "@/store/useAuthStore";
 
 export default function HomePage() {
-   const token = useAuthStore.getState().token;
-   console.log("Token: "+token);
+   // const token = useAuthStore.getState().token;
+   // console.log("Token: "+token);
     return (
         <main className="bg-background text-foreground">
             {/* Hero Section */}
