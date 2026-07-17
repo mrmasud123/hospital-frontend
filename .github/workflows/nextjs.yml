@@ -37,6 +37,8 @@ jobs:
           cp -r public .next/standalone/public
           mkdir -p .next/standalone/.next
           cp -r .next/static .next/standalone/.next/static
+          mkdir -p .next/standalone/tmp
+          date > .next/standalone/tmp/restart.txt
 
       - name: 📂 Sync app to server
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
@@ -45,19 +47,10 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: .next/standalone/
-          # ⚠️ Confirm this against where your FTP account actually lands.
-          # If you created a dedicated FTP account scoped to the app folder,
-          # its root usually *is* that folder — use "/" instead.
-          # If you're using your main account's FTP login, "/nextjs-app/" is correct.
           server-dir: /nextjs-app/
           exclude: |
             **/.git*/**
             **/.git*/**/**
-
-      - name: 🔁 Create restart trigger
-        run: |
-          mkdir -p restart-trigger/tmp
-          date > restart-trigger/tmp/restart.txt
 
       - name: 📤 Upload restart trigger
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
