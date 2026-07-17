@@ -1,42 +1,67 @@
-name: Deploy Next.js to cPanel
+name: 🚀 Deploy website on push
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build-and-deploy:
+  web-deploy:
+    name: 🎉 Deploy
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: 🟢 Use Node.js 22
+        uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: 🔨 Build project
         run: npm run build
         env:
+          # NEXT_PUBLIC_* vars are baked into the client bundle at build time,
+          # so they must be set here, not just in cPanel's env panel.
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
 
-      - name: Assemble standalone output
+      - name: 🧩 Assemble standalone output
         run: |
-          cp -r .next/static .next/standalone/.next/static
           cp -r public .next/standalone/public
-          mkdir -p .next/standalone/tmp
-          date > .next/standalone/tmp/restart.txt
+          mkdir -p .next/standalone/.next
+          cp -r .next/static .next/standalone/.next/static
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: 📂 Sync app to server
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./.next/standalone/
-          server-dir: /hospital-frontend/
-          state-name: .ftp-deploy-sync-state-app.json
-          dangerous-clean-slate: false
+          local-dir: .next/standalone/
+          # ⚠️ Confirm this against where your FTP account actually lands.
+          # If you created a dedicated FTP account scoped to the app folder,
+          # its root usually *is* that folder — use "/" instead.
+          # If you're using your main account's FTP login, "/nextjs-app/" is correct.
+          server-dir: /nextjs-app/
+          exclude: |
+            **/.git*/**
+            **/.git*/**/**
+
+      - name: 🔁 Create restart trigger
+        run: |
+          mkdir -p restart-trigger/tmp
+          date > restart-trigger/tmp/restart.txt
+
+      - name: 📤 Upload restart trigger
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./restart-trigger/
+          server-dir: /nextjs-app/
